@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage  xmlns="http://xamarin.com/schemas/2014/forms"
+              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:local="clr-namespace:Pathogen.Views"
+              Title="{Binding AppTitle}"
+              BackgroundColor="{DynamicResource PageBackgroundColor}"
+              x:Class="Pathogen.Views.MainPage">
+    <ContentPage.Padding>
+        <OnPlatform x:TypeArguments="Thickness">
+            <On Platform="iOS, Android" Value="0,40,0,0" />
+        </OnPlatform>
+    </ContentPage.Padding>
+
+    <Grid Padding="40,0,40,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="0" Text="Home" Clicked="OnHeaderClick" TextColor="{DynamicResource HeaderColor}"></Button>
+        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="1" Text="News" Clicked="OnHeaderClick" TextColor="{DynamicResource PrimaryTextColor}"></Button>
+        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="2" Text="Charts" Clicked="OnHeaderClick" TextColor="{DynamicResource PrimaryTextColor}"></Button>
+        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="3" Text="Settings" Clicked="OnHeaderClick" TextColor="{DynamicResource PrimaryTextColor}"></Button>
+
+        <CarouselView x:Name="carouselView" Grid.Row="1" Grid.ColumnSpan="4" PositionChanged="OnPositionChanged">
+            <CarouselView.ItemsSource>
+			    <x:Array Type="{x:Type ContentView}">
+				    <local:HomeView></local:HomeView>
+				    <local:NewsView></local:NewsView>
+				    <local:ChartsView></local:ChartsView>
+                    <local:SettingsView></local:SettingsView>
+			    </x:Array>
+		    </CarouselView.ItemsSource>
+		    <CarouselView.ItemTemplate>
+			    <DataTemplate>
+				    <ContentView Content="{Binding .}" />
+			    </DataTemplate>
+		    </CarouselView.ItemTemplate>
+        </CarouselView>
+    </Grid>
+
+</ContentPage>
