@@ -1,9 +1,22 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sv="clr-namespace:AiForms.Renderers;assembly=SettingsView"
              x:Class="Pathogen.Views.SettingsView">
-    <StackLayout>
-        <Label Text="Settings" FontSize="Medium" HorizontalOptions="Center" TextColor="{DynamicResource SecondaryTextColor}" />
-        <BoxView Color="{DynamicResource SecondaryTextColor}" WidthRequest="200" HeightRequest="200" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" />
-    </StackLayout>
+    <sv:SettingsView HasUnevenRows="true"
+                     VerticalOptions="FillAndExpand"
+                     BackgroundColor="{DynamicResource PageBackgroundColor}">
+        <sv:Section Title="Location">
+            <sv:TextPickerCell Title="Location"
+                               SelectedItem="{Binding Location}"
+                               Items="{Binding Locations}"
+                               />
+
+            <!--<sv:SwitchCell Title="Switch"
+                           On="true" 
+                           Description="This is description." />
+            <sv:CheckboxCell Title="Checkbox"
+                             Checked="true" />-->
+        </sv:Section>
+    </sv:SettingsView>
 </ContentView>

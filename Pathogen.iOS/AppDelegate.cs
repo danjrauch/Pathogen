@@ -24,6 +24,8 @@ namespace Pathogen.iOS
         {
             Xamarin.Calabash.Start();
             global::Xamarin.Forms.Forms.Init();
+            AiForms.Renderers.iOS.SettingsViewInit.Init();
+
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);

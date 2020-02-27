@@ -1,17 +1,40 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ResourceDictionary xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sv="clr-namespace:AiForms.Renderers;assembly=SettingsView"
              x:Class="Pathogen.Themes.DarkTheme">
     <Color x:Key="PageBackgroundColor">#242424</Color>
-    <Color x:Key="HeaderColor">#3282b8</Color>
     <Color x:Key="PrimaryColor">#3282b8</Color>
-    <Color x:Key="SecondaryColor">White</Color>
+    <Color x:Key="SecondaryColor">#313131</Color>
+    <Color x:Key="TertiaryColor">#CC434243</Color>
     <Color x:Key="PrimaryTextColor">White</Color>
-    <Color x:Key="SecondaryTextColor">White</Color>
+    <Color x:Key="SecondaryTextColor">#AAA2E0A2</Color>
     <Color x:Key="TertiaryTextColor">WhiteSmoke</Color>
     <Color x:Key="TransparentColor">Transparent</Color>
 
-    <!--<Style x:Key="NavigationHeader" TargetType="Label">
-        <Setter Property="FontFamily" Value="" />
-    </Style>-->
+    <Color x:Key="AccentColor">#818380</Color>
+    <Color x:Key="DisabledColor">WhiteSmoke</Color>
+    <Color x:Key="PaleTextColor">#808588</Color>
+    <x:Double x:Key="BaseFontSize">12</x:Double>
+    <x:Double x:Key="BaseFontSize+">14</x:Double>
+    <x:Double x:Key="BaseFontSize++">16</x:Double>
+    <x:Double x:Key="BaseFontSize-">10</x:Double>
+
+    <Style TargetType="sv:SettingsView">
+        <Setter Property="SeparatorColor" Value="{DynamicResource DisabledColor}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource PageBackgroundColor}" />
+        <Setter Property="HeaderBackgroundColor" Value="{DynamicResource PageBackgroundColor}" />
+        <Setter Property="CellBackgroundColor" Value="{DynamicResource PageBackgroundColor}" />
+        <Setter Property="CellTitleColor" Value="{DynamicResource PrimaryTextColor}" />
+        <Setter Property="CellValueTextColor" Value="{DynamicResource PaleTextColor}" />
+        <Setter Property="CellTitleFontSize" Value="{DynamicResource BaseFontSize++}" />
+        <Setter Property="CellValueTextFontSize" Value="{DynamicResource BaseFontSize}" />
+        <Setter Property="CellDescriptionColor" Value="{DynamicResource PrimaryTextColor}" />
+        <Setter Property="CellDescriptionFontSize" Value="{DynamicResource BaseFontSize-}" />
+        <Setter Property="CellAccentColor" Value="{DynamicResource AccentColor}" />
+        <Setter Property="SelectedColor" Value="{DynamicResource SecondaryTextColor}" />
+        <Setter Property="HeaderTextColor" Value="{DynamicResource SecondaryTextColor}" />
+        <Setter Property="FooterFontSize" Value="{DynamicResource BaseFontSize-}" />
+        <Setter Property="FooterTextColor" Value="{DynamicResource SecondaryTextColor}" />
+    </Style>
 </ResourceDictionary>

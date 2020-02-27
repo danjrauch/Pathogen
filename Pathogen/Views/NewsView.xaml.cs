@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pathogen.ViewModels;
 using Xamarin.Forms;
 
 namespace Pathogen.Views
@@ -9,6 +10,7 @@ namespace Pathogen.Views
         public NewsView()
         {
             InitializeComponent();
+            BindingContext = new MainPageViewModel();
         }
     }
 }

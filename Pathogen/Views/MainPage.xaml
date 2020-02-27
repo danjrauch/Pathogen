@@ -11,7 +11,7 @@
         </OnPlatform>
     </ContentPage.Padding>
 
-    <Grid Padding="40,0,40,0">
+    <Grid Padding="30,0,30,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -19,16 +19,72 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
+            <RowDefinition Height="{x:OnPlatform iOS='30', Android='40', UWP='40'}"/>
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="0" Text="Home" Clicked="OnHeaderClick" TextColor="{DynamicResource HeaderColor}"></Button>
-        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="1" Text="News" Clicked="OnHeaderClick" TextColor="{DynamicResource PrimaryTextColor}"></Button>
-        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="2" Text="Charts" Clicked="OnHeaderClick" TextColor="{DynamicResource PrimaryTextColor}"></Button>
-        <Button HorizontalOptions="Center" Grid.Row="0" Grid.Column="3" Text="Settings" Clicked="OnHeaderClick" TextColor="{DynamicResource PrimaryTextColor}"></Button>
+        <!-- Watch this for DynamicResource Setter status for DataTrigger:
+             https://github.com/xamarin/Xamarin.Forms/issues/7068 -->
+        <Button Grid.Row="0" Grid.Column="0"
+                Text="Home"
+                TextColor="{DynamicResource PrimaryTextColor}"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Center"
+                Command="{Binding PositionChangeCommand}" CommandParameter="0">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button"
+                             Binding="{Binding CarouselPosition}"
+                             Value="0">
+                    <Setter Property="TextColor" Value="#AAA2E0A2" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+        <Button Grid.Row="0" Grid.Column="1"
+                Text="News"
+                TextColor="{DynamicResource PrimaryTextColor}"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Center"
+                Command="{Binding PositionChangeCommand}" CommandParameter="1">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button"
+                             Binding="{Binding CarouselPosition}"
+                             Value="1">
+                    <Setter Property="TextColor" Value="#AAA2E0A2" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+        <Button Grid.Row="0" Grid.Column="2"
+                Text="Data"
+                TextColor="{DynamicResource PrimaryTextColor}"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Center"
+                Command="{Binding PositionChangeCommand}" CommandParameter="2">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button"
+                             Binding="{Binding CarouselPosition}"
+                             Value="2">
+                    <Setter Property="TextColor" Value="#AAA2E0A2" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+        <Button Grid.Row="0" Grid.Column="3"
+                Text="Settings"
+                TextColor="{DynamicResource PrimaryTextColor}"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Center"
+                Command="{Binding PositionChangeCommand}" CommandParameter="3">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button"
+                             Binding="{Binding CarouselPosition}"
+                             Value="3">
+                    <Setter Property="TextColor" Value="#AAA2E0A2" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
 
-        <CarouselView x:Name="carouselView" Grid.Row="1" Grid.ColumnSpan="4" PositionChanged="OnPositionChanged">
+        <CarouselView Grid.Row="1" Grid.ColumnSpan="4"
+                      Position="{Binding CarouselPosition}"
+                      HorizontalScrollBarVisibility="Never">
             <CarouselView.ItemsSource>
 			    <x:Array Type="{x:Type ContentView}">
 				    <local:HomeView></local:HomeView>

@@ -1,13 +1,66 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:microcharts="clr-namespace:Microcharts.Forms;assembly=Microcharts.Forms"
              x:Class="Pathogen.Views.HomeView">
-    <StackLayout>
-        <Frame CornerRadius="10"
-               BackgroundColor="{DynamicResource PrimaryColor}"
-               HasShadow="False"
-               >
-
-        </Frame>
-    </StackLayout>
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <StackLayout>
+            <Frame CornerRadius="15"
+                   BackgroundColor="{DynamicResource SecondaryColor}"
+                   HasShadow="False">
+                <StackLayout VerticalOptions="FillAndExpand">
+                    <Label Text="Hello, here is a summary of the situation in "
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource SecondaryTextColor}"></Label>
+                    <Label Text="Confirmed Cases : "
+                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                    <Label Text="Suspected Cases : "
+                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                    <Label Text="Confirmed Deaths : "
+                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                </StackLayout>
+            </Frame>
+            <microcharts:ChartView x:Name="MyChart"
+                                   HeightRequest="200"/>
+            <Frame CornerRadius="15"
+                   BackgroundColor="{DynamicResource SecondaryColor}"
+                   HasShadow="False">
+                <StackLayout>
+                    <Label Text="Local News"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource SecondaryTextColor}"></Label>
+                    <ListView ItemsSource="{Binding LocalNews}"
+                              SeparatorVisibility="None"
+                              VerticalScrollBarVisibility="Never"
+                              HeightRequest="320"
+                              HasUnevenRows="True"
+                              BackgroundColor="Transparent">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout>
+                                        <Frame CornerRadius="10"
+                                               Padding="12,5,12,8"
+                                               Margin="0,3,0,3"
+                                               BackgroundColor="{DynamicResource TertiaryColor}"
+                                               HasShadow="False">
+                                            <StackLayout>
+                                                <Label Text="{Binding Publication}"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                                                <Label Text="{Binding Content}"
+                                                       FontSize="11"
+                                                       TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                                            </StackLayout>
+                                        </Frame>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+    </ScrollView>
 </ContentView>

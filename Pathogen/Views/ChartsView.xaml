@@ -3,7 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pathogen.Views.ChartsView">
     <StackLayout>
-        <Label Text="Charts" FontSize="Medium" HorizontalOptions="Center" TextColor="{DynamicResource SecondaryTextColor}" />
-        <BoxView Color="{DynamicResource SecondaryTextColor}" WidthRequest="200" HeightRequest="200" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" />
+        <Frame CornerRadius="10"
+               BackgroundColor="{DynamicResource PrimaryColor}"
+               HasShadow="False">
+            <Label Text="Hello, here is a summay of the situation in "
+                   TextColor="{DynamicResource PrimaryTextColor}"></Label>
+        </Frame>
     </StackLayout>
 </ContentView>

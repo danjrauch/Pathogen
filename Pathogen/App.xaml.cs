@@ -14,7 +14,7 @@ namespace Pathogen
 
     public enum Theme { Light, Dark }
 
-    public partial class App : Application
+    public partial class App : Xamarin.Forms.Application
     {
         public App()
         {
@@ -47,9 +47,9 @@ namespace Pathogen
         void SetTheme(Theme theme)
         {
             if (theme == Theme.Dark)
-                App.Current.Resources = new DarkTheme();
+                Application.Current.Resources = new DarkTheme();
             else
-                App.Current.Resources = new LightTheme();
+                Application.Current.Resources = new LightTheme();
         }
     }
 }
