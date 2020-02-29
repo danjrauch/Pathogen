@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Pathogen.Models
 {
     public class NewsItem

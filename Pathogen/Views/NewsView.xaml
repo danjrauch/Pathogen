@@ -11,7 +11,7 @@
                     <Label Text="Global News"
                            FontAttributes="Bold"
                            TextColor="{DynamicResource SecondaryTextColor}"></Label>
-                    <ListView ItemsSource="{Binding GlobalNews}"
+                    <ListView ItemsSource="{Binding GlobalNews.Result}"
                               SeparatorVisibility="None"
                               VerticalScrollBarVisibility="Never"
                               HeightRequest="320"

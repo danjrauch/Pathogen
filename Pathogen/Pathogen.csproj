@@ -17,6 +17,9 @@
     <PackageReference Include="Microcharts.Forms" Version="0.7.1" />
     <PackageReference Include="Microcharts" Version="0.7.1" />
     <PackageReference Include="AiForms.SettingsView" Version="1.0.9" />
+    <PackageReference Include="NewsAPI" Version="0.5.0" />
+    <PackageReference Include="Mvvm.Async" Version="0.0.1" />
+    <PackageReference Include="Nito.Mvvm.Async" Version="1.0.0-pre-03" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\" />
