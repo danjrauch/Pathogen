@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sv="clr-namespace:AiForms.Renderers;assembly=SettingsView"
              x:Class="Pathogen.Themes.DarkTheme">
-    <Color x:Key="PageBackgroundColor">#242424</Color>
+    <Color x:Key="PageBackgroundColor">Black</Color>
     <Color x:Key="PrimaryColor">#3282b8</Color>
-    <Color x:Key="SecondaryColor">#313131</Color>
-    <Color x:Key="TertiaryColor">#CC434243</Color>
-    <Color x:Key="PrimaryTextColor">White</Color>
+    <Color x:Key="SecondaryColor">#AA313131</Color>
+    <Color x:Key="TertiaryColor">#AA434243</Color>
+    <Color x:Key="PrimaryTextColor">#AAd7d5da</Color>
     <Color x:Key="SecondaryTextColor">#AAA2E0A2</Color>
     <Color x:Key="TertiaryTextColor">WhiteSmoke</Color>
     <Color x:Key="TransparentColor">Transparent</Color>

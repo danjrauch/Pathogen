@@ -9,7 +9,7 @@
                    BackgroundColor="{DynamicResource SecondaryColor}"
                    HasShadow="False">
                 <StackLayout VerticalOptions="FillAndExpand">
-                    <Label Text="Hello, here is a summary of the situation in "
+                    <Label Text="{Binding Location, StringFormat='Hello, here is a summary of the situation in {0:F0}'}"
                            FontAttributes="Bold"
                            TextColor="{DynamicResource SecondaryTextColor}"></Label>
                     <Label Text="Confirmed Cases : "
@@ -29,7 +29,7 @@
                     <Label Text="Local News"
                            FontAttributes="Bold"
                            TextColor="{DynamicResource SecondaryTextColor}"></Label>
-                    <ListView ItemsSource="{Binding LocalNews}"
+                    <ListView ItemsSource="{Binding LocalNews.Result}"
                               SeparatorVisibility="None"
                               VerticalScrollBarVisibility="Never"
                               HeightRequest="320"

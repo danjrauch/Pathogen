@@ -5,9 +5,9 @@ using Xamarin.Forms;
 
 namespace Pathogen.Views
 {
-    public partial class NewsView : ContentView
+    public partial class ArticlePage : ContentPage
     {
-        public NewsView()
+        public ArticlePage()
         {
             InitializeComponent();
             BindingContext = new MainPageViewModel(Navigation);

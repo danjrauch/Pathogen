@@ -10,7 +10,7 @@ namespace Pathogen.Views
         public SettingsView()
         {
             InitializeComponent();
-            BindingContext = new MainPageViewModel();
+            BindingContext = new MainPageViewModel(Navigation);
         }
     }
 }

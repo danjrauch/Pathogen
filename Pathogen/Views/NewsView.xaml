@@ -1,7 +1,14 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Pathogen.Converters"
+             xmlns:b="clr-namespace:Behaviors;assembly=Behaviors"
              x:Class="Pathogen.Views.NewsView">
+    <ContentView.Resources>
+		<ResourceDictionary>
+			<converters:SelectedItemEventArgsToSelectedItemConverter x:Key="SelectedItemConverter" />
+		</ResourceDictionary>
+	</ContentView.Resources>
     <ScrollView VerticalScrollBarVisibility="Never">
         <StackLayout>
             <Frame CornerRadius="15"
@@ -14,9 +21,15 @@
                     <ListView ItemsSource="{Binding GlobalNews.Result}"
                               SeparatorVisibility="None"
                               VerticalScrollBarVisibility="Never"
-                              HeightRequest="320"
+                              HeightRequest="700"
                               HasUnevenRows="True"
                               BackgroundColor="Transparent">
+                        <ListView.Behaviors>
+                            <b:EventHandlerBehavior EventName="ItemSelected">
+                                <b:InvokeCommandAction Command="{Binding NavigateToNews}"
+                                                       Converter="{StaticResource SelectedItemConverter}" />
+                            </b:EventHandlerBehavior>
+                        </ListView.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>

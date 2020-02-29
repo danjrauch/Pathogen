@@ -10,6 +10,7 @@ using NewsAPI.Constants;
 using NewsAPI.Models;
 using Nito.Mvvm;
 using Pathogen.Models;
+using Pathogen.Views;
 using Xamarin.Forms;
 
 namespace Pathogen.ViewModels
@@ -19,8 +20,10 @@ namespace Pathogen.ViewModels
         private int carouselPosition;
         private string location;
         private List<string> locations;
-        private List<NewsItem> localNews;
+        private NotifyTask<List<NewsItem>> localNews;
         private NotifyTask<List<NewsItem>> globalNews;
+
+        public INavigation Navigation { get; set; }
 
         public int CarouselPosition
         {
@@ -52,7 +55,7 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public List<NewsItem> LocalNews
+        public NotifyTask<List<NewsItem>> LocalNews
         {
             get => localNews;
             set
@@ -72,17 +75,13 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public MainPageViewModel()
+        public MainPageViewModel(INavigation navigation)
         {
-            LocalNews = new List<NewsItem>() {
-                new NewsItem("CNN", "Lorem ipsum something.", DateTime.Now),
-                new NewsItem("New York Times", "Lorem ipsum something.", DateTime.Now),
-                new NewsItem("Washington Post", "Lorem ipsum something.", DateTime.Now),
-                new NewsItem("LA Times", "Lorem ipsum something.", DateTime.Now),
-                new NewsItem("CNN", "Lorem ipsum something.", DateTime.Now),
-                new NewsItem("New York Times", "Lorem ipsum something.", DateTime.Now),
-                new NewsItem("CNN", "Lorem ipsum something.", DateTime.Now)
-            };
+            Navigation = navigation;
+
+            Location = "Chicago";
+
+            LocalNews = NotifyTask.Create(RetrieveLocalNews(), new List<NewsItem>());
 
             GlobalNews = NotifyTask.Create(RetrieveGlobalNews(), new List<NewsItem>());
 
@@ -99,7 +98,7 @@ namespace Pathogen.ViewModels
 
             var articlesResponse = await newsApiClient.GetEverythingAsync(new EverythingRequest
             {
-                Q = "Coronavirus",
+                Q = "Coronavirus OR COVID-19",
                 SortBy = SortBys.Popularity,
                 Language = Languages.EN,
                 From = DateTime.Now
@@ -108,7 +107,30 @@ namespace Pathogen.ViewModels
             if (articlesResponse.Status == Statuses.Ok)
             {
                 return (from ar in articlesResponse.Articles
-                        select new NewsItem(ar.Author, ar.Description, ar.PublishedAt ?? DateTime.Now))
+                        select new NewsItem(ar.Source.Name, ar.Title, ar.Description, ar.PublishedAt ?? DateTime.Now))
+                        .ToList();
+            }
+            else
+            {
+                return new List<NewsItem>();
+            }
+        }
+
+        private async Task<List<NewsItem>> RetrieveLocalNews()
+        {
+            var newsApiClient = new NewsApiClient("0d8408e7585c4fa790539389d8d96fa6");
+
+            var articlesResponse = await newsApiClient.GetTopHeadlinesAsync(new TopHeadlinesRequest
+            {
+                Q = "Coronavirus OR COVID-19",
+                Country = Countries.US,
+                Language = Languages.EN,
+            });
+
+            if (articlesResponse.Status == Statuses.Ok)
+            {
+                return (from ar in articlesResponse.Articles
+                        select new NewsItem(ar.Source.Name, ar.Title, ar.Description, ar.PublishedAt ?? DateTime.Now))
                         .ToList();
             }
             else
@@ -127,6 +149,17 @@ namespace Pathogen.ViewModels
         public ICommand PositionChangeCommand => new Command<string>((position) =>
         {
             CarouselPosition = int.Parse(position);
+        });
+
+        public ICommand NavigateToNews => new Command(async (row) =>
+        {
+            if(row is NewsItem article)
+            {
+                Console.WriteLine(article.Publication);
+                var articlePage = new ArticlePage();
+                articlePage.BindingContext = article;
+                await Navigation.PushAsync(articlePage);
+            }
         });
     }
 }

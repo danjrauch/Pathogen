@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="{DynamicResource PageBackgroundColor}"
+             x:Class="Pathogen.Views.ArticlePage">
+    <ContentPage.Padding>
+        <OnPlatform x:TypeArguments="Thickness">
+            <On Platform="iOS, Android" Value="0,10,0,0" />
+        </OnPlatform>
+    </ContentPage.Padding>
+
+    <Grid Padding="30,0,30,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{x:OnPlatform iOS='20', Android='40', UWP='40'}"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0"
+               TextColor="{DynamicResource PrimaryTextColor}"
+               Text="{Binding Publication}">
+        </Label>
+
+        <!-- TODO : Change 'some time ago' message -->
+        <Label Grid.Row="0" Grid.Column="1"
+               HorizontalOptions="EndAndExpand"
+               TextColor="{DynamicResource PrimaryTextColor}"
+               Text="some time ago">
+        </Label>
+
+        <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
+            <Frame CornerRadius="10"
+                   Padding="12,5,12,8"
+                   Margin="0,3,0,3"
+                   BackgroundColor="{DynamicResource TertiaryColor}"
+                   HasShadow="False">
+                <StackLayout>
+                    <Label Text="{Binding Title}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                    <Label Text="{Binding Content}"
+                           FontSize="11"
+                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+        
+
+    </Grid>
+</ContentPage>
