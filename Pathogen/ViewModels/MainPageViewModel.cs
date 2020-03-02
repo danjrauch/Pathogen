@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MongoDB.Driver;
 using NewsAPI;
 using NewsAPI.Constants;
 using NewsAPI.Models;
@@ -19,11 +20,10 @@ namespace Pathogen.ViewModels
     {
         private int carouselPosition;
         private string location;
-        private List<string> locations;
+        private NotifyTask<List<string>> locations;
+        private NotifyTask<List<ReportNotice>> reportNotices;
         private NotifyTask<List<NewsItem>> localNews;
         private NotifyTask<List<NewsItem>> globalNews;
-
-        public INavigation Navigation { get; set; }
 
         public int CarouselPosition
         {
@@ -45,12 +45,22 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public List<string> Locations
+        public NotifyTask<List<string>> Locations
         {
             get => locations;
             set
             {
                 locations = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public NotifyTask<List<ReportNotice>> ReportNotices
+        {
+            get => reportNotices;
+            set
+            {
+                reportNotices = value;
                 OnPropertyChanged();
             }
         }
@@ -75,21 +85,15 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public MainPageViewModel(INavigation navigation)
+        public MainPageViewModel()
         {
-            Navigation = navigation;
-
-            Location = "Chicago";
-
             LocalNews = NotifyTask.Create(RetrieveLocalNews(), new List<NewsItem>());
 
             GlobalNews = NotifyTask.Create(RetrieveGlobalNews(), new List<NewsItem>());
 
-            Locations = new List<string>() {
-                "Chicago, IL",
-                "New York City, New York",
-                "Madison, Wisconsin"
-            };
+            ReportNotices = NotifyTask.Create(RetrieveReportNotices(), new List<ReportNotice>());
+
+            Locations = NotifyTask.Create(RetrieveLocations(), new List<string>());
         }
 
         private async Task<List<NewsItem>> RetrieveGlobalNews()
@@ -139,6 +143,48 @@ namespace Pathogen.ViewModels
             }
         }
 
+        private async Task<List<ReportNotice>> RetrieveReportNotices()
+        {
+            var connectionString = "mongodb+srv://pathogen:OdX2kR9DmzPLmuXk@corona-lvqsz.azure.mongodb.net/test?retryWrites=true&w=majority";
+
+            const string databaseName = "corona";
+            const string collectionName = "time_series";
+
+            var client = new MongoClient(connectionString);
+            var db = client.GetDatabase(databaseName);
+            var collection = db.GetCollection<ReportNotice>(collectionName);
+
+            var documents = await collection.Find<ReportNotice>(report => true).ToListAsync();
+
+            return documents;
+        }
+
+        private async Task<List<string>> RetrieveLocations()
+        {
+            var connectionString = "mongodb+srv://pathogen:OdX2kR9DmzPLmuXk@corona-lvqsz.azure.mongodb.net/test?retryWrites=true&w=majority";
+
+            const string databaseName = "corona";
+            const string collectionName = "time_series";
+
+            var client = new MongoClient(connectionString);
+            var db = client.GetDatabase(databaseName);
+            var collection = db.GetCollection<ReportNotice>(collectionName);
+
+            var documents = await collection.Find<ReportNotice>(report => true).ToListAsync();
+
+            var locs = new List<string>();
+
+            foreach(ReportNotice report in documents)
+            {
+                if (!locs.Contains(report.CountryRegion))
+                    locs.Add(report.CountryRegion);
+            }
+
+            locs.Sort();
+
+            return locs;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -146,19 +192,20 @@ namespace Pathogen.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public ICommand PositionChangeCommand => new Command<string>((position) =>
+        public ICommand PositionChangeCommand => new Xamarin.Forms.Command<string>((position) =>
         {
-            CarouselPosition = int.Parse(position);
+            //CarouselPosition = int.Parse(position);
         });
 
-        public ICommand NavigateToNews => new Command(async (row) =>
+        public ICommand NavigateToNews => new Xamarin.Forms.Command(async (row) =>
         {
             if(row is NewsItem article)
             {
-                Console.WriteLine(article.Publication);
-                var articlePage = new ArticlePage();
-                articlePage.BindingContext = article;
-                await Navigation.PushAsync(articlePage);
+                var articlePage = new ArticlePage
+                {
+                    BindingContext = article
+                };
+                await Application.Current.MainPage.Navigation.PushAsync(articlePage);
             }
         });
     }

@@ -75,9 +75,9 @@ namespace Pathogen.Views
         public HomeView()
         {
             InitializeComponent();
-            BindingContext = new MainPageViewModel(Navigation);
+            //BindingContext = new MainPageViewModel(Navigation);
 
-            MyChart.Chart = new Microcharts.BarChart
+            MyChart.Chart = new Microcharts.RadarChart
             {
                 Entries = _entries,
                 BackgroundColor = SKColors.Transparent,

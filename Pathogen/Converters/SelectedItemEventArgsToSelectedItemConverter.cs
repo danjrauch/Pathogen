@@ -9,8 +9,8 @@ namespace Pathogen.Converters
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			var eventArgs = value as SelectedItemChangedEventArgs;
-			var newsItem = eventArgs.SelectedItem as NewsItem;
+			var eventArgs = value as ItemTappedEventArgs;
+			var newsItem = eventArgs.Item as NewsItem;
 
 			if (parameter != null)
 			{

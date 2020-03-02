@@ -1,15 +1,22 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Pathogen.Converters"
+             xmlns:local="clr-namespace:EventToCommandBehavior"
              xmlns:microcharts="clr-namespace:Microcharts.Forms;assembly=Microcharts.Forms"
              x:Class="Pathogen.Views.HomeView">
+    <ContentView.Resources>
+		<ResourceDictionary>
+			<converters:SelectedItemEventArgsToSelectedItemConverter x:Key="SelectedItemConverter" />
+		</ResourceDictionary>
+	</ContentView.Resources>
     <ScrollView VerticalScrollBarVisibility="Never">
         <StackLayout>
             <Frame CornerRadius="15"
                    BackgroundColor="{DynamicResource SecondaryColor}"
                    HasShadow="False">
                 <StackLayout VerticalOptions="FillAndExpand">
-                    <Label Text="{Binding Location, StringFormat='Hello, here is a summary of the situation in {0:F0}'}"
+                    <Label Text="{Binding Location, Mode=TwoWay}"
                            FontAttributes="Bold"
                            TextColor="{DynamicResource SecondaryTextColor}"></Label>
                     <Label Text="Confirmed Cases : "
@@ -34,7 +41,11 @@
                               VerticalScrollBarVisibility="Never"
                               HeightRequest="320"
                               HasUnevenRows="True"
+                              SelectionMode="None"
                               BackgroundColor="Transparent">
+                        <ListView.Behaviors>
+                            <local:EventToCommandBehavior EventName="ItemTapped" Command="{Binding NavigateToNews}" Converter="{StaticResource SelectedItemConverter}" />
+                        </ListView.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>

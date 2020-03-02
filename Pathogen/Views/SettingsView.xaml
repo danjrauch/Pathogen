@@ -6,17 +6,12 @@
     <sv:SettingsView HasUnevenRows="true"
                      VerticalOptions="FillAndExpand"
                      BackgroundColor="{DynamicResource PageBackgroundColor}">
-        <sv:Section Title="Location">
+        <sv:Section Title="Location"
+                    IsVisible="{Binding Locations.IsSuccessfullyCompleted}">
             <sv:TextPickerCell Title="Location"
-                               SelectedItem="{Binding Location}"
-                               Items="{Binding Locations}"
+                               SelectedItem="{Binding Location, Mode=TwoWay}"
+                               Items="{Binding Locations.Result}"
                                />
-
-            <!--<sv:SwitchCell Title="Switch"
-                           On="true" 
-                           Description="This is description." />
-            <sv:CheckboxCell Title="Checkbox"
-                             Checked="true" />-->
         </sv:Section>
     </sv:SettingsView>
 </ContentView>

@@ -2,7 +2,7 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:Pathogen.Converters"
-             xmlns:b="clr-namespace:Behaviors;assembly=Behaviors"
+             xmlns:local="clr-namespace:EventToCommandBehavior"
              x:Class="Pathogen.Views.NewsView">
     <ContentView.Resources>
 		<ResourceDictionary>
@@ -23,12 +23,10 @@
                               VerticalScrollBarVisibility="Never"
                               HeightRequest="700"
                               HasUnevenRows="True"
+                              SelectionMode="None"
                               BackgroundColor="Transparent">
                         <ListView.Behaviors>
-                            <b:EventHandlerBehavior EventName="ItemSelected">
-                                <b:InvokeCommandAction Command="{Binding NavigateToNews}"
-                                                       Converter="{StaticResource SelectedItemConverter}" />
-                            </b:EventHandlerBehavior>
+                            <local:EventToCommandBehavior EventName="ItemTapped" Command="{Binding NavigateToNews}" Converter="{StaticResource SelectedItemConverter}" />
                         </ListView.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -43,10 +41,10 @@
                                                 <Label Text="{Binding Publication}"
                                                        FontSize="12"
                                                        FontAttributes="Bold"
-                                                       TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                                                       TextColor="{DynamicResource PrimaryTextColor}"/>
                                                 <Label Text="{Binding Content}"
                                                        FontSize="11"
-                                                       TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                                                       TextColor="{DynamicResource PrimaryTextColor}"/>
                                             </StackLayout>
                                         </Frame>
                                     </StackLayout>

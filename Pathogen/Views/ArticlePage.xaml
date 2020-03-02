@@ -1,8 +1,14 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:converters="clr-namespace:Pathogen.Converters"
              BackgroundColor="{DynamicResource PageBackgroundColor}"
              x:Class="Pathogen.Views.ArticlePage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:DateTimeToTimeSince x:Key="datetimeToTimeSpan" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ContentPage.Padding>
         <OnPlatform x:TypeArguments="Thickness">
             <On Platform="iOS, Android" Value="0,10,0,0" />
@@ -28,7 +34,8 @@
         <Label Grid.Row="0" Grid.Column="1"
                HorizontalOptions="EndAndExpand"
                TextColor="{DynamicResource PrimaryTextColor}"
-               Text="some time ago">
+               Text="{Binding PublishDatetime,
+                      Converter={StaticResource datetimeToTimeSpan}}">
         </Label>
 
         <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
@@ -48,7 +55,5 @@
                 </StackLayout>
             </Frame>
         </StackLayout>
-        
-
     </Grid>
 </ContentPage>

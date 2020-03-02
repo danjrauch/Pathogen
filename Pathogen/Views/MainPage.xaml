@@ -2,10 +2,16 @@
 <ContentPage  xmlns="http://xamarin.com/schemas/2014/forms"
               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
               xmlns:local="clr-namespace:Pathogen.Views"
+              xmlns:cv="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
+              xmlns:viewmodels="clr-namespace:Pathogen.ViewModels"
               Title="Pathogen"
               BackgroundColor="{DynamicResource PageBackgroundColor}"
               x:Class="Pathogen.Views.MainPage"
               NavigationPage.HasNavigationBar="false">
+    <ContentPage.BindingContext>
+        <viewmodels:MainPageViewModel/>
+    </ContentPage.BindingContext>
+
     <ContentPage.Padding>
         <OnPlatform x:TypeArguments="Thickness">
             <On Platform="iOS, Android" Value="0,40,0,0" />
@@ -83,7 +89,20 @@
             </Button.Triggers>
         </Button>
 
-        <CarouselView Grid.Row="1" Grid.ColumnSpan="4"
+        <cv:CarouselViewControl Grid.Row="1" Grid.ColumnSpan="4"
+                                Position="{Binding CarouselPosition}"
+                                InterPageSpacing="10">
+            <cv:CarouselViewControl.ItemsSource>
+                <x:Array Type="{x:Type View}">
+                    <local:HomeView></local:HomeView>
+				    <local:NewsView></local:NewsView>
+				    <local:ChartsView></local:ChartsView>
+                    <local:SettingsView></local:SettingsView>
+                </x:Array>
+            </cv:CarouselViewControl.ItemsSource>
+        </cv:CarouselViewControl>
+
+        <!--<CarouselView Grid.Row="1" Grid.ColumnSpan="4"
                       Position="{Binding CarouselPosition}"
                       HorizontalScrollBarVisibility="Never">
             <CarouselView.ItemsSource>
@@ -96,10 +115,9 @@
 		    </CarouselView.ItemsSource>
 		    <CarouselView.ItemTemplate>
 			    <DataTemplate>
-				    <ContentView Content="{Binding .}" />
+				    <ContentView Content="{Binding .}"/>
 			    </DataTemplate>
 		    </CarouselView.ItemTemplate>
-        </CarouselView>
+        </CarouselView>-->
     </Grid>
-
 </ContentPage>

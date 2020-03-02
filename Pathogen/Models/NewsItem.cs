@@ -9,6 +9,14 @@ namespace Pathogen.Models
         public string Content { get; set; }
         public DateTime PublishDatetime { get; set; }
 
+        public NewsItem()
+        {
+            Publication = "";
+            Title = "";
+            Content = "";
+            PublishDatetime = DateTime.Now;
+        }
+
         public NewsItem(string publication, string title, string content, DateTime publishedDate)
         {
             Publication = publication;

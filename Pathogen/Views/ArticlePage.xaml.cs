@@ -10,7 +10,6 @@ namespace Pathogen.Views
         public ArticlePage()
         {
             InitializeComponent();
-            BindingContext = new MainPageViewModel(Navigation);
         }
     }
 }

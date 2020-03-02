@@ -21,6 +21,7 @@ namespace Pathogen.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            CarouselView.FormsPlugin.Android.CarouselViewRenderer.Init();
             AiForms.Renderers.Droid.SettingsViewInit.Init();
 
             LoadApplication(new App());
