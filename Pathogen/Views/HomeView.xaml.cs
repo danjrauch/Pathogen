@@ -75,7 +75,6 @@ namespace Pathogen.Views
         public HomeView()
         {
             InitializeComponent();
-            //BindingContext = new MainPageViewModel(Navigation);
 
             MyChart.Chart = new Microcharts.RadarChart
             {

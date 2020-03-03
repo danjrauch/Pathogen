@@ -16,15 +16,19 @@
                    BackgroundColor="{DynamicResource SecondaryColor}"
                    HasShadow="False">
                 <StackLayout VerticalOptions="FillAndExpand">
-                    <Label Text="{Binding Location, Mode=TwoWay}"
+                    <Label Text="{Binding Location, StringFormat='Hello, here\'s the situation report for {0:F2}'}"
                            FontAttributes="Bold"
-                           TextColor="{DynamicResource SecondaryTextColor}"></Label>
-                    <Label Text="Confirmed Cases : "
-                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
-                    <Label Text="Suspected Cases : "
-                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
-                    <Label Text="Confirmed Deaths : "
-                           TextColor="{DynamicResource PrimaryTextColor}"></Label>
+                           TextColor="{DynamicResource SecondaryTextColor}"/>
+                    <Label Text="{Binding LocalReport.Date, StringFormat='As of {0:F0}'}"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryTextColor}"
+                           HorizontalOptions="Center"/>
+                    <Label Text="{Binding LocalReport.Confirmed, StringFormat='Confirmed Cases : {0:F0}'}"
+                           TextColor="{DynamicResource PrimaryTextColor}"/>
+                    <Label Text="{Binding LocalReport.Recovered, StringFormat='Confirmed Recovered : {0:F0}'}"
+                           TextColor="{DynamicResource PrimaryTextColor}"/>
+                    <Label Text="{Binding LocalReport.Deaths, StringFormat='Confirmed Deaths : {0:F0}'}"
+                           TextColor="{DynamicResource PrimaryTextColor}"/>
                 </StackLayout>
             </Frame>
             <microcharts:ChartView x:Name="MyChart"
@@ -39,7 +43,7 @@
                     <ListView ItemsSource="{Binding LocalNews.Result}"
                               SeparatorVisibility="None"
                               VerticalScrollBarVisibility="Never"
-                              HeightRequest="320"
+                              HeightRequest="310"
                               HasUnevenRows="True"
                               SelectionMode="None"
                               BackgroundColor="Transparent">

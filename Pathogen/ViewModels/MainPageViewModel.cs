@@ -18,69 +18,104 @@ namespace Pathogen.ViewModels
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
-        private int carouselPosition;
-        private string location;
-        private NotifyTask<List<string>> locations;
-        private NotifyTask<List<ReportNotice>> reportNotices;
-        private NotifyTask<List<NewsItem>> localNews;
-        private NotifyTask<List<NewsItem>> globalNews;
+        private int _carouselPosition;
+        private ReportNotice _localReport;
+        private string _localGraph;
+        private string _location;
+        private NotifyTask<List<string>> _locations;
+        private NotifyTask<List<ReportNotice>> _reportNotices;
+        private NotifyTask<List<NewsItem>> _localNews;
+        private NotifyTask<List<NewsItem>> _globalNews;
 
         public int CarouselPosition
         {
-            get => carouselPosition;
+            get => _carouselPosition;
             set
             {
-                carouselPosition = value;
+                _carouselPosition = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ReportNotice LocalReport
+        {
+            get => _localReport;
+            set
+            {
+                _localReport = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string LocalGraph
+        {
+            get => _localGraph;
+            set
+            {
+                _localGraph = value;
                 OnPropertyChanged();
             }
         }
 
         public string Location
         {
-            get => location;
+            get => _location;
             set
             {
-                location = value;
+                _location = value;
+                if(_reportNotices.IsSuccessfullyCompleted)
+                {
+                    foreach(ReportNotice report in _reportNotices.Result)
+                    {
+                        var locationString = report.ProvinceState != "" ?
+                            report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
+
+                        if(_location == locationString)
+                        {
+                           LocalReport = report;
+                        }
+                    }
+                }
                 OnPropertyChanged();
             }
         }
 
         public NotifyTask<List<string>> Locations
         {
-            get => locations;
+            get => _locations;
             set
             {
-                locations = value;
+                _locations = value;
                 OnPropertyChanged();
             }
         }
 
         public NotifyTask<List<ReportNotice>> ReportNotices
         {
-            get => reportNotices;
+            get => _reportNotices;
             set
             {
-                reportNotices = value;
+                _reportNotices = value;
                 OnPropertyChanged();
             }
         }
 
         public NotifyTask<List<NewsItem>> LocalNews
         {
-            get => localNews;
+            get => _localNews;
             set
             {
-                localNews = value;
+                _localNews = value;
                 OnPropertyChanged();
             }
         }
 
         public NotifyTask<List<NewsItem>> GlobalNews
         {
-            get => globalNews;
+            get => _globalNews;
             set
             {
-                globalNews = value;
+                _globalNews = value;
                 OnPropertyChanged();
             }
         }
@@ -156,6 +191,8 @@ namespace Pathogen.ViewModels
 
             var documents = await collection.Find<ReportNotice>(report => true).ToListAsync();
 
+            documents = documents.OrderByDescending(report => DateTime.Parse(report.Date)).ToList();
+
             return documents;
         }
 
@@ -176,8 +213,13 @@ namespace Pathogen.ViewModels
 
             foreach(ReportNotice report in documents)
             {
-                if (!locs.Contains(report.CountryRegion))
-                    locs.Add(report.CountryRegion);
+                var locationString = report.ProvinceState != "" ?
+                    report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
+
+                if (!locs.Contains(locationString))
+                {
+                    locs.Add(locationString);
+                }
             }
 
             locs.Sort();
@@ -194,7 +236,7 @@ namespace Pathogen.ViewModels
 
         public ICommand PositionChangeCommand => new Xamarin.Forms.Command<string>((position) =>
         {
-            //CarouselPosition = int.Parse(position);
+            CarouselPosition = int.Parse(position);
         });
 
         public ICommand NavigateToNews => new Xamarin.Forms.Command(async (row) =>
