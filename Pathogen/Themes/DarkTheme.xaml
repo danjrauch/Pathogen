@@ -7,7 +7,7 @@
     <Color x:Key="PrimaryColor">#3282b8</Color>
     <Color x:Key="SecondaryColor">#AA313131</Color>
     <Color x:Key="TertiaryColor">#AA434243</Color>
-    <Color x:Key="PrimaryTextColor">#AAd7d5da</Color>
+    <Color x:Key="PrimaryTextColor">#CCd7d5da</Color>
     <Color x:Key="SecondaryTextColor">#AAA2E0A2</Color>
     <Color x:Key="TertiaryTextColor">WhiteSmoke</Color>
     <Color x:Key="TransparentColor">Transparent</Color>

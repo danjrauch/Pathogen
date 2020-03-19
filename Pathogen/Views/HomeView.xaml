@@ -4,6 +4,7 @@
              xmlns:converters="clr-namespace:Pathogen.Converters"
              xmlns:local="clr-namespace:EventToCommandBehavior"
              xmlns:microcharts="clr-namespace:Microcharts.Forms;assembly=Microcharts.Forms"
+             xmlns:controls="clr-namespace:Pathogen.Controls"
              x:Class="Pathogen.Views.HomeView">
     <ContentView.Resources>
 		<ResourceDictionary>
@@ -31,8 +32,16 @@
                            TextColor="{DynamicResource PrimaryTextColor}"/>
                 </StackLayout>
             </Frame>
-            <microcharts:ChartView x:Name="MyChart"
-                                   HeightRequest="200"/>
+            <!--<microcharts:ChartView x:Name="MyChart"
+                                   HeightRequest="200"/>-->
+            <!--<controls:BindableMap MapType="Street" MapPosition="{Binding LocalPosition}" MapPins="{Binding LocalPins}" />-->
+            <Frame CornerRadius="15"
+                   IsClippedToBounds="true"
+                   Padding="0"
+                   HeightRequest="350"
+                   HasShadow="False">
+                <controls:BindableMap MapType="Street" MapPosition="{Binding LocalPosition}" MapPins="{Binding LocalPins}" />
+            </Frame>
             <Frame CornerRadius="15"
                    BackgroundColor="{DynamicResource SecondaryColor}"
                    HasShadow="False">
@@ -43,7 +52,7 @@
                     <ListView ItemsSource="{Binding LocalNews.Result}"
                               SeparatorVisibility="None"
                               VerticalScrollBarVisibility="Never"
-                              HeightRequest="310"
+                              HeightRequest="255"
                               HasUnevenRows="True"
                               SelectionMode="None"
                               BackgroundColor="Transparent">

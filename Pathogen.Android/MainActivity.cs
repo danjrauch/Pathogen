@@ -6,6 +6,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Xamarin;
 
 namespace Pathogen.Droid
 {
@@ -21,6 +22,7 @@ namespace Pathogen.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            FormsMaps.Init(this, savedInstanceState);
             CarouselView.FormsPlugin.Android.CarouselViewRenderer.Init();
             AiForms.Renderers.Droid.SettingsViewInit.Init();
 

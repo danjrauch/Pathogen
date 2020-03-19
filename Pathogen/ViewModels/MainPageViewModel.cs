@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,6 +14,7 @@ using Nito.Mvvm;
 using Pathogen.Models;
 using Pathogen.Views;
 using Xamarin.Forms;
+using Xamarin.Forms.Maps;
 
 namespace Pathogen.ViewModels
 {
@@ -20,7 +22,8 @@ namespace Pathogen.ViewModels
     {
         private int _carouselPosition;
         private ReportNotice _localReport;
-        private string _localGraph;
+        private Position _localPosition;
+        private ObservableCollection<Pin> _localPins = new ObservableCollection<Pin>();
         private string _location;
         private NotifyTask<List<string>> _locations;
         private NotifyTask<List<ReportNotice>> _reportNotices;
@@ -43,16 +46,30 @@ namespace Pathogen.ViewModels
             set
             {
                 _localReport = value;
+                var locationString = _localReport.ProvinceState != "" ?
+                            _localReport.ProvinceState + ", " + _localReport.CountryRegion : _localReport.CountryRegion;
+                LocalPosition = new Position(_localReport.Latitude, _localReport.Longitude);
+                LocalPins.Add(new Pin() { Position = _localPosition, Type = PinType.Generic, Label = locationString });
                 OnPropertyChanged();
             }
         }
 
-        public string LocalGraph
+        public Position LocalPosition
         {
-            get => _localGraph;
+            get => _localPosition;
             set
             {
-                _localGraph = value;
+                _localPosition = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Pin> LocalPins
+        {
+            get => _localPins;
+            set
+            {
+                _localPins = value;
                 OnPropertyChanged();
             }
         }

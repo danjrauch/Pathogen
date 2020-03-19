@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Foundation;
 using UIKit;
+using Xamarin;
 
 namespace Pathogen.iOS
 {
@@ -23,6 +24,7 @@ namespace Pathogen.iOS
         {
             Xamarin.Calabash.Start();
             global::Xamarin.Forms.Forms.Init();
+            FormsMaps.Init();
             CarouselView.FormsPlugin.iOS.CarouselViewRenderer.Init();
             AiForms.Renderers.iOS.SettingsViewInit.Init();
 
