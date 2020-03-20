@@ -9,7 +9,7 @@
 			<converters:SelectedItemEventArgsToSelectedItemConverter x:Key="SelectedItemConverter" />
 		</ResourceDictionary>
 	</ContentView.Resources>
-    <ScrollView VerticalScrollBarVisibility="Never">
+    <ScrollView VerticalScrollBarVisibility="Never" Padding="0,0,0,20">
         <StackLayout>
             <Frame CornerRadius="15"
                    BackgroundColor="{DynamicResource SecondaryColor}"
@@ -21,7 +21,7 @@
                     <ListView ItemsSource="{Binding GlobalNews.Result}"
                               SeparatorVisibility="None"
                               VerticalScrollBarVisibility="Never"
-                              HeightRequest="700"
+                              HeightRequest="800"
                               HasUnevenRows="True"
                               SelectionMode="None"
                               BackgroundColor="Transparent">

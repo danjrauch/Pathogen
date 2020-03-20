@@ -56,7 +56,7 @@ namespace Pathogen.Controls
             {
                 ((BindableMap)b).MoveToRegion(MapSpan.FromCenterAndRadius(
                     (Position)n,
-                    Distance.FromMiles(10)));
+                    Distance.FromMiles(50)));
             });
 
         public Position MapPosition { get; set; }

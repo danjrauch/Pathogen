@@ -18,7 +18,7 @@
         </OnPlatform>
     </ContentPage.Padding>
 
-    <Grid Padding="30,0,30,0">
+    <Grid Padding="20,0,20,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />

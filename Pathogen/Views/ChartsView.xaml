@@ -1,50 +1,18 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Pathogen.Controls"
              x:Class="Pathogen.Views.ChartsView">
-    <ScrollView VerticalScrollBarVisibility="Never">
+    <ScrollView VerticalScrollBarVisibility="Never" Padding="0,0,0,20">
         <StackLayout>
             <Frame CornerRadius="15"
-                   BackgroundColor="{DynamicResource SecondaryColor}"
+                   IsClippedToBounds="true"
+                   Padding="0"
+                   VerticalOptions="FillAndExpand"
                    HasShadow="False">
-                <StackLayout>
-                    <Label Text="Daily Data Reports"
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource SecondaryTextColor}"></Label>
-                    <ListView ItemsSource="{Binding ReportNotices.Result}"
-                              SeparatorVisibility="None"
-                              VerticalScrollBarVisibility="Never"
-                              HeightRequest="700"
-                              HasUnevenRows="True"
-                              BackgroundColor="Transparent">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <ViewCell>
-                                    <StackLayout>
-                                        <Frame CornerRadius="10"
-                                               Padding="12,5,12,8"
-                                               Margin="0,3,0,3"
-                                               BackgroundColor="{DynamicResource TertiaryColor}"
-                                               HasShadow="False">
-                                            <StackLayout>
-                                                <Label Text="{Binding CountryRegion}"
-                                                       FontSize="12"
-                                                       FontAttributes="Bold"
-                                                       TextColor="{DynamicResource PrimaryTextColor}"></Label>
-                                                <Label Text="{Binding Confirmed}"
-                                                       FontSize="11"
-                                                       TextColor="{DynamicResource PrimaryTextColor}"></Label>
-                                                <Label Text="{Binding Deaths}"
-                                                       FontSize="11"
-                                                       TextColor="{DynamicResource PrimaryTextColor}"></Label>
-                                            </StackLayout>
-                                        </Frame>
-                                    </StackLayout>
-                                </ViewCell>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </StackLayout>
+                <controls:BindableMap MapType="Street"
+                                      MapPosition="{Binding LocalPosition}"
+                                      MapPins="{Binding Pins}" />
             </Frame>
         </StackLayout>
     </ScrollView>

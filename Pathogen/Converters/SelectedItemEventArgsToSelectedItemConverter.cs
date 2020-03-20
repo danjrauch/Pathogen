@@ -10,15 +10,22 @@ namespace Pathogen.Converters
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			var eventArgs = value as ItemTappedEventArgs;
-			var newsItem = eventArgs.Item as NewsItem;
 
-			if (parameter != null)
-			{
-				//int ageParam = int.Parse(parameter.ToString());
-				//person = new Person(person.Name, person.Age, ageParam);
-			}
+            switch (eventArgs.Item)
+            {
+				case NewsItem item:
+					return item;
+				case string item:
+					return item;
+				default:
+					return null;
+            }
 
-			return newsItem;
+            //if (parameter != null)
+            //{
+            //    int ageParam = int.Parse(parameter.ToString());
+            //    person = new Person(person.Name, person.Age, ageParam);
+            //}
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

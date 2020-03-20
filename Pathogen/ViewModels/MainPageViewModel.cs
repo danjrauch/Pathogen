@@ -2,16 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using MongoDB.Driver;
-using NewsAPI;
-using NewsAPI.Constants;
-using NewsAPI.Models;
 using Nito.Mvvm;
 using Pathogen.Models;
+using Pathogen.Services;
 using Pathogen.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -24,7 +19,10 @@ namespace Pathogen.ViewModels
         private ReportNotice _localReport;
         private Position _localPosition;
         private ObservableCollection<Pin> _localPins = new ObservableCollection<Pin>();
+        private ObservableCollection<Pin> _pins = new ObservableCollection<Pin>();
         private string _location;
+        private List<string> _locationSearchResults;
+        private bool _showLocationSearchResults;
         private NotifyTask<List<string>> _locations;
         private NotifyTask<List<ReportNotice>> _reportNotices;
         private NotifyTask<List<NewsItem>> _localNews;
@@ -40,6 +38,52 @@ namespace Pathogen.ViewModels
             }
         }
 
+        public string Location
+        {
+            get => _location;
+            set
+            {
+                _location = value;
+                if (_reportNotices.IsSuccessfullyCompleted)
+                {
+                    foreach (ReportNotice report in _reportNotices.Result)
+                    {
+                        var locationString = report.ProvinceState != "" ?
+                            report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
+
+                        if (_location == locationString)
+                        {
+                            LocalReport = report;
+                        }
+                    }
+                }
+
+                LocalNews = NotifyTask.Create(DataService.RetrieveLocalNews(_location), new List<NewsItem>());
+
+                OnPropertyChanged();
+            }
+        }
+
+        public List<string> LocationSearchResults
+        {
+            get => _locationSearchResults;
+            set
+            {
+                _locationSearchResults = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowLocationSearchResults
+        {
+            get => _showLocationSearchResults;
+            set
+            {
+                _showLocationSearchResults = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ReportNotice LocalReport
         {
             get => _localReport;
@@ -49,7 +93,13 @@ namespace Pathogen.ViewModels
                 var locationString = _localReport.ProvinceState != "" ?
                             _localReport.ProvinceState + ", " + _localReport.CountryRegion : _localReport.CountryRegion;
                 LocalPosition = new Position(_localReport.Latitude, _localReport.Longitude);
-                LocalPins.Add(new Pin() { Position = _localPosition, Type = PinType.Generic, Label = locationString });
+                LocalPins.Add(new Pin()
+                {
+                    Position = _localPosition,
+                    Type = PinType.Generic,
+                    Address = "Confirmed: " + _localReport.Confirmed.ToString(),
+                    Label = locationString
+                });
                 OnPropertyChanged();
             }
         }
@@ -74,29 +124,6 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public string Location
-        {
-            get => _location;
-            set
-            {
-                _location = value;
-                if(_reportNotices.IsSuccessfullyCompleted)
-                {
-                    foreach(ReportNotice report in _reportNotices.Result)
-                    {
-                        var locationString = report.ProvinceState != "" ?
-                            report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
-
-                        if(_location == locationString)
-                        {
-                           LocalReport = report;
-                        }
-                    }
-                }
-                OnPropertyChanged();
-            }
-        }
-
         public NotifyTask<List<string>> Locations
         {
             get => _locations;
@@ -113,6 +140,36 @@ namespace Pathogen.ViewModels
             set
             {
                 _reportNotices = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Pin> Pins
+        {
+            get
+            {
+                if (_reportNotices.IsSuccessfullyCompleted && _pins.Count == 0)
+                {
+                    foreach(var report in _reportNotices.Result)
+                    {
+                        var locationString = report.ProvinceState != "" ?
+                            report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
+                        var pos = new Position(report.Latitude, report.Longitude);
+                        _pins.Add(new Pin()
+                        {
+                            Position = pos,
+                            Type = PinType.Generic,
+                            Address = "Confirmed: " + report.Confirmed.ToString(),
+                            Label = locationString
+                        });
+                    }
+                }
+                return _pins;
+            }
+
+            set
+            {
+                _pins = value;
                 OnPropertyChanged();
             }
         }
@@ -139,109 +196,13 @@ namespace Pathogen.ViewModels
 
         public MainPageViewModel()
         {
-            LocalNews = NotifyTask.Create(RetrieveLocalNews(), new List<NewsItem>());
+            LocalNews = NotifyTask.Create(DataService.RetrieveLocalNews(_location), new List<NewsItem>());
 
-            GlobalNews = NotifyTask.Create(RetrieveGlobalNews(), new List<NewsItem>());
+            GlobalNews = NotifyTask.Create(DataService.RetrieveGlobalNews(), new List<NewsItem>());
 
-            ReportNotices = NotifyTask.Create(RetrieveReportNotices(), new List<ReportNotice>());
+            ReportNotices = NotifyTask.Create(DataService.RetrieveReportNotices(), new List<ReportNotice>());
 
-            Locations = NotifyTask.Create(RetrieveLocations(), new List<string>());
-        }
-
-        private async Task<List<NewsItem>> RetrieveGlobalNews()
-        {
-            var newsApiClient = new NewsApiClient("0d8408e7585c4fa790539389d8d96fa6");
-
-            var articlesResponse = await newsApiClient.GetEverythingAsync(new EverythingRequest
-            {
-                Q = "Coronavirus OR COVID-19",
-                SortBy = SortBys.Popularity,
-                Language = Languages.EN,
-                From = DateTime.Now
-            });
-
-            if (articlesResponse.Status == Statuses.Ok)
-            {
-                return (from ar in articlesResponse.Articles
-                        select new NewsItem(ar.Source.Name, ar.Title, ar.Description, ar.PublishedAt ?? DateTime.Now))
-                        .ToList();
-            }
-            else
-            {
-                return new List<NewsItem>();
-            }
-        }
-
-        private async Task<List<NewsItem>> RetrieveLocalNews()
-        {
-            var newsApiClient = new NewsApiClient("0d8408e7585c4fa790539389d8d96fa6");
-
-            var articlesResponse = await newsApiClient.GetTopHeadlinesAsync(new TopHeadlinesRequest
-            {
-                Q = "Coronavirus OR COVID-19",
-                Country = Countries.US,
-                Language = Languages.EN,
-            });
-
-            if (articlesResponse.Status == Statuses.Ok)
-            {
-                return (from ar in articlesResponse.Articles
-                        select new NewsItem(ar.Source.Name, ar.Title, ar.Description, ar.PublishedAt ?? DateTime.Now))
-                        .ToList();
-            }
-            else
-            {
-                return new List<NewsItem>();
-            }
-        }
-
-        private async Task<List<ReportNotice>> RetrieveReportNotices()
-        {
-            var connectionString = "mongodb+srv://pathogen:OdX2kR9DmzPLmuXk@corona-lvqsz.azure.mongodb.net/test?retryWrites=true&w=majority";
-
-            const string databaseName = "corona";
-            const string collectionName = "time_series";
-
-            var client = new MongoClient(connectionString);
-            var db = client.GetDatabase(databaseName);
-            var collection = db.GetCollection<ReportNotice>(collectionName);
-
-            var documents = await collection.Find<ReportNotice>(report => true).ToListAsync();
-
-            documents = documents.OrderByDescending(report => DateTime.Parse(report.Date)).ToList();
-
-            return documents;
-        }
-
-        private async Task<List<string>> RetrieveLocations()
-        {
-            var connectionString = "mongodb+srv://pathogen:OdX2kR9DmzPLmuXk@corona-lvqsz.azure.mongodb.net/test?retryWrites=true&w=majority";
-
-            const string databaseName = "corona";
-            const string collectionName = "time_series";
-
-            var client = new MongoClient(connectionString);
-            var db = client.GetDatabase(databaseName);
-            var collection = db.GetCollection<ReportNotice>(collectionName);
-
-            var documents = await collection.Find<ReportNotice>(report => true).ToListAsync();
-
-            var locs = new List<string>();
-
-            foreach(ReportNotice report in documents)
-            {
-                var locationString = report.ProvinceState != "" ?
-                    report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
-
-                if (!locs.Contains(locationString))
-                {
-                    locs.Add(locationString);
-                }
-            }
-
-            locs.Sort();
-
-            return locs;
+            Locations = NotifyTask.Create(DataService.RetrieveLocations(), new List<string>());
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -256,9 +217,36 @@ namespace Pathogen.ViewModels
             CarouselPosition = int.Parse(position);
         });
 
+        public ICommand PerformLocationSearch => new Command<string>((string query) =>
+        {
+            List<string> results = new List<string>();
+            if (_locations.IsSuccessfullyCompleted)
+            {
+                foreach(var location in _locations.Result)
+                {
+                    if (location.ToLower().Contains(query.Trim().ToLower()))
+                        results.Add(location);
+                }
+            }
+            if (results.Count == 0)
+                results.Add("No results");
+            LocationSearchResults = results;
+            ShowLocationSearchResults = true;
+        });
+
+        public ICommand ChangeLocation => new Xamarin.Forms.Command((row) =>
+        {
+            if (row is string location)
+            {
+                if (location != "No results")
+                    Location = location;
+                ShowLocationSearchResults = false;
+            }
+        });
+
         public ICommand NavigateToNews => new Xamarin.Forms.Command(async (row) =>
         {
-            if(row is NewsItem article)
+            if (row is NewsItem article)
             {
                 var articlePage = new ArticlePage
                 {
