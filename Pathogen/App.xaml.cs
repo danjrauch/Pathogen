@@ -3,16 +3,17 @@ using System.Threading.Tasks;
 using Pathogen.Themes;
 using Pathogen.Views;
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace Pathogen
 {
-    public interface IEnvironment
-    {
-        Theme GetOperatingSystemTheme();
-        Task<Theme> GetOperatingSystemThemeAsync();
-    }
+    //public interface IEnvironment
+    //{
+    //    Theme GetOperatingSystemTheme();
+    //    Task<Theme> GetOperatingSystemThemeAsync();
+    //}
 
-    public enum Theme { Light, Dark }
+    //public enum Theme { Light, Dark }
 
     public partial class App : Xamarin.Forms.Application
     {
@@ -26,7 +27,8 @@ namespace Pathogen
         {
             base.OnStart();
 
-            Theme theme = DependencyService.Get<IEnvironment>().GetOperatingSystemTheme();
+            //Theme theme = DependencyService.Get<IEnvironment>().GetOperatingSystemTheme();
+            AppTheme theme = AppInfo.RequestedTheme;
 
             SetTheme(theme);
         }
@@ -39,14 +41,15 @@ namespace Pathogen
         {
             base.OnResume();
 
-            Theme theme = DependencyService.Get<IEnvironment>().GetOperatingSystemTheme();
+            //Theme theme = DependencyService.Get<IEnvironment>().GetOperatingSystemTheme();
+            AppTheme theme = AppInfo.RequestedTheme;
 
             SetTheme(theme);
         }
 
-        void SetTheme(Theme theme)
+        void SetTheme(AppTheme theme)
         {
-            if (theme == Theme.Dark)
+            if (theme == AppTheme.Dark)
                 Application.Current.Resources = new DarkTheme();
             else
                 Application.Current.Resources = new LightTheme();

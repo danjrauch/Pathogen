@@ -4,6 +4,7 @@
              xmlns:converters="clr-namespace:Pathogen.Converters"
              xmlns:local="clr-namespace:EventToCommandBehavior"
              xmlns:controls="clr-namespace:Pathogen.Controls"
+             xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
              x:Class="Pathogen.Views.HomeView">
     <ContentView.Resources>
 		<ResourceDictionary>
@@ -14,7 +15,8 @@
         <StackLayout>
             <Frame CornerRadius="15"
                    BackgroundColor="{DynamicResource SecondaryColor}"
-                   HasShadow="False">
+                   HasShadow="False"
+                   IsVisible="{Binding InitializeNotifier.IsCompleted}">
                 <StackLayout VerticalOptions="FillAndExpand">
                     <Label Text="{Binding Location, StringFormat='Hello, here\'s the situation report for {0:F2}'}"
                            FontAttributes="Bold"
@@ -77,21 +79,37 @@
                     </ListView>
                 </StackLayout>
             </Frame>
-            <Frame CornerRadius="15"
+            <ActivityIndicator IsRunning="{Binding InitializeNotifier.IsNotCompleted}"
+                               Color="{Binding SecondaryTextColor}"
+                               IsVisible="{Binding InitializeNotifier.IsNotCompleted}" />
+            <!--<Frame CornerRadius="15"
                    IsClippedToBounds="true"
                    Padding="0"
                    HeightRequest="350"
-                   HasShadow="False">
+                   HasShadow="False"
+                   IsVisible="{Binding InitializeNotifier.IsCompleted}">
                 <controls:BindableMap MapType="Street" MapPosition="{Binding LocalPosition}" MapPins="{Binding LocalPins}" />
+            </Frame>-->
+            <Frame CornerRadius="15"
+                   IsClippedToBounds="true"
+                   Padding="10"
+                   HasShadow="False"
+                   BackgroundColor="{DynamicResource SecondaryColor}"
+                   HeightRequest="300"
+                   IsVisible="{Binding InitializeNotifier.IsCompleted}">
+                <oxy:PlotView Model="{Binding LocalTimeSeriesModel}"
+                              VerticalOptions="Fill"
+                              HorizontalOptions="Fill" />
             </Frame>
             <Frame CornerRadius="15"
                    BackgroundColor="{DynamicResource SecondaryColor}"
-                   HasShadow="False">
+                   HasShadow="False"
+                   IsVisible="{Binding InitializeNotifier.IsCompleted}">
                 <StackLayout>
                     <Label Text="Local News"
                            FontAttributes="Bold"
                            TextColor="{DynamicResource SecondaryTextColor}"></Label>
-                    <ListView ItemsSource="{Binding LocalNews.Result}"
+                    <ListView ItemsSource="{Binding LocalNews}"
                               SeparatorVisibility="None"
                               VerticalScrollBarVisibility="Never"
                               HeightRequest="255"

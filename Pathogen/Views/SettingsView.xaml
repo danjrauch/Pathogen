@@ -7,10 +7,10 @@
                      VerticalOptions="FillAndExpand"
                      BackgroundColor="{DynamicResource PageBackgroundColor}">
         <sv:Section Title="Location"
-                    IsVisible="{Binding Locations.IsSuccessfullyCompleted}">
+                    IsVisible="{Binding InitializeNotifier.IsSuccessfullyCompleted}">
             <sv:TextPickerCell Title="Location"
                                SelectedItem="{Binding Location, Mode=TwoWay}"
-                               Items="{Binding Locations.Result}"
+                               Items="{Binding Locations}"
                                />
         </sv:Section>
     </sv:SettingsView>

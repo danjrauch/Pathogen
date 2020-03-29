@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Nito.Mvvm;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using Pathogen.Models;
 using Pathogen.Services;
 using Pathogen.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 
@@ -23,10 +30,12 @@ namespace Pathogen.ViewModels
         private string _location;
         private List<string> _locationSearchResults;
         private bool _showLocationSearchResults;
-        private NotifyTask<List<string>> _locations;
-        private NotifyTask<List<ReportNotice>> _reportNotices;
-        private NotifyTask<List<NewsItem>> _localNews;
-        private NotifyTask<List<NewsItem>> _globalNews;
+        private List<string> _locations;
+        private List<ReportNotice> _reportNotices;
+        private List<NewsItem> _localNews;
+        private List<NewsItem> _globalNews;
+        private PlotModel _comparisonModel;
+        private PlotModel _localTimeSeriesModel;
 
         public int CarouselPosition
         {
@@ -38,27 +47,94 @@ namespace Pathogen.ViewModels
             }
         }
 
+        public NotifyTask InitializeNotifier { get; private set; }
+
+        public PlotModel ComparisonModel
+        {
+            get => _comparisonModel;
+            set
+            {
+                _comparisonModel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public PlotModel LocalTimeSeriesModel
+        {
+            get => _localTimeSeriesModel;
+            set
+            {
+                _localTimeSeriesModel = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string Location
         {
             get => _location;
             set
             {
                 _location = value;
-                if (_reportNotices.IsSuccessfullyCompleted)
-                {
-                    foreach (ReportNotice report in _reportNotices.Result)
-                    {
-                        var locationString = report.ProvinceState != "" ?
-                            report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
 
-                        if (_location == locationString)
-                        {
-                            LocalReport = report;
-                        }
+                Preferences.Set("Location", _location);
+
+                LocalReport = (from report in _reportNotices
+                               let locationString = report.ProvinceState != "" ?
+                                   report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion
+                               where _location == locationString
+                               orderby DateTime.Parse(report.Date) descending
+                               select report).ToList()[0];
+
+                //LocalNews = NotifyTask.Create(DataService.RetrieveLocalNews(_location), new List<NewsItem>());
+
+                Task.Run(async () =>
+                {
+                    LocalNews = await DataService.RetrieveLocalNews(_location);
+                });
+
+                var points = from report in _reportNotices
+                             let locationString = report.ProvinceState != "" ?
+                                 report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion
+                             where locationString == _location
+                             select new DataPoint(DateTimeAxis.ToDouble(DateTime.Parse(report.Date)), report.Confirmed);
+
+                //Color primaryColor = (Color)Application.Current.Resources["PrimaryTextColor"];
+
+                //OxyColor borderColor = OxyColor.FromRgb(Convert.ToByte(primaryColor.R), Convert.ToByte(primaryColor.G), Convert.ToByte(primaryColor.B));
+
+                OxyColor borderColor = OxyColor.Parse(Application.Current.Resources["ModelBaseColor"].ToString());
+
+                LocalTimeSeriesModel = new PlotModel
+                {
+                    TitleColor = borderColor,
+                    PlotAreaBorderColor = borderColor,
+                    TextColor = borderColor,
+                    DefaultColors = OxyPalettes.Hot(8).Colors,
+                    Title = _location + " Time Series",
+                    Axes = {
+                    new LinearAxis {
+                        IsPanEnabled = false,
+                        Position = AxisPosition.Left,
+                        MinimumPadding = 0,
+                        TicklineColor = borderColor
+                    },
+                    new DateTimeAxis {
+                        Position = AxisPosition.Bottom,
+                        MinimumPadding = 0,
+                        TicklineColor = borderColor,
+                        //MajorTickSize = 5,
+                        //MinorTickSize = 5,
+                        StringFormat = "MM/dd"
+                    }
+                },
+                    Series = {
+                    new LineSeries
+                    {
+                        Color = OxyColor.FromArgb(170, 128, 176, 128),
+                        ItemsSource = points
                     }
                 }
-
-                LocalNews = NotifyTask.Create(DataService.RetrieveLocalNews(_location), new List<NewsItem>());
+                };
 
                 OnPropertyChanged();
             }
@@ -91,13 +167,15 @@ namespace Pathogen.ViewModels
             {
                 _localReport = value;
                 var locationString = _localReport.ProvinceState != "" ?
-                            _localReport.ProvinceState + ", " + _localReport.CountryRegion : _localReport.CountryRegion;
+                  _localReport.ProvinceState + ", " + _localReport.CountryRegion : _localReport.CountryRegion;
                 LocalPosition = new Position(_localReport.Latitude, _localReport.Longitude);
                 LocalPins.Add(new Pin()
                 {
                     Position = _localPosition,
                     Type = PinType.Generic,
-                    Address = "Confirmed: " + _localReport.Confirmed.ToString(),
+                    Address = "Confirmed: " + _localReport.Confirmed.ToString() +
+                              " Recovered: " + _localReport.Recovered.ToString() +
+                              " Deaths: " + _localReport.Deaths.ToString(),
                     Label = locationString
                 });
                 OnPropertyChanged();
@@ -124,7 +202,7 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public NotifyTask<List<string>> Locations
+        public List<string> Locations
         {
             get => _locations;
             set
@@ -134,7 +212,7 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public NotifyTask<List<ReportNotice>> ReportNotices
+        public List<ReportNotice> ReportNotices
         {
             get => _reportNotices;
             set
@@ -148,20 +226,27 @@ namespace Pathogen.ViewModels
         {
             get
             {
-                if (_reportNotices.IsSuccessfullyCompleted && _pins.Count == 0)
+                if (_pins.Count == 0)
                 {
-                    foreach(var report in _reportNotices.Result)
+                    Hashtable pinLocations = new Hashtable();
+                    foreach (var report in _reportNotices)
                     {
                         var locationString = report.ProvinceState != "" ?
                             report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion;
-                        var pos = new Position(report.Latitude, report.Longitude);
-                        _pins.Add(new Pin()
+                        if (!pinLocations.ContainsKey(locationString))
                         {
-                            Position = pos,
-                            Type = PinType.Generic,
-                            Address = "Confirmed: " + report.Confirmed.ToString(),
-                            Label = locationString
-                        });
+                            pinLocations.Add(locationString, true);
+                            var pos = new Position(report.Latitude, report.Longitude);
+                            _pins.Add(new Pin()
+                            {
+                                Position = pos,
+                                Type = PinType.Generic,
+                                Address = "Confirmed: " + report.Confirmed.ToString() +
+                                          " Recovered: " + report.Recovered.ToString() +
+                                          " Deaths: " + report.Deaths.ToString(),
+                                Label = locationString
+                            });
+                        }
                     }
                 }
                 return _pins;
@@ -174,7 +259,7 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public NotifyTask<List<NewsItem>> LocalNews
+        public List<NewsItem> LocalNews
         {
             get => _localNews;
             set
@@ -184,7 +269,7 @@ namespace Pathogen.ViewModels
             }
         }
 
-        public NotifyTask<List<NewsItem>> GlobalNews
+        public List<NewsItem> GlobalNews
         {
             get => _globalNews;
             set
@@ -196,13 +281,76 @@ namespace Pathogen.ViewModels
 
         public MainPageViewModel()
         {
-            LocalNews = NotifyTask.Create(DataService.RetrieveLocalNews(_location), new List<NewsItem>());
+            InitializeNotifier = NotifyTask.Create(InitializeData());
+        }
 
-            GlobalNews = NotifyTask.Create(DataService.RetrieveGlobalNews(), new List<NewsItem>());
+        public async Task InitializeData()
+        {
+            string storedLocation = Preferences.Get("Location", "Afghanistan");
 
-            ReportNotices = NotifyTask.Create(DataService.RetrieveReportNotices(), new List<ReportNotice>());
+            var GetGlobalNews = DataService.RetrieveGlobalNews();
+            var GetLocations = DataService.RetrieveLocations();
+            var GetReportNotices = DataService.RetrieveReportNotices();
+            var GetLocalNews = DataService.RetrieveLocalNews(storedLocation);
 
-            Locations = NotifyTask.Create(DataService.RetrieveLocations(), new List<string>());
+            await Task.WhenAll(GetGlobalNews, GetLocations, GetReportNotices, GetLocalNews);
+
+            LocalNews = GetLocalNews.Result;
+            GlobalNews = GetGlobalNews.Result;
+            ReportNotices = GetReportNotices.Result;
+            Locations = GetLocations.Result;
+
+            Console.WriteLine("LocalNews count: " + LocalNews.Count);
+            Console.WriteLine("GlobalNews count: " + GlobalNews.Count);
+            Console.WriteLine("ReportNotices count: " + ReportNotices.Count);
+            Console.WriteLine("Locations count: " + Locations.Count);
+
+            Location = storedLocation;
+
+            var sortedPlaces = (from report in _reportNotices
+                                let locationString = report.ProvinceState != "" ?
+                                    report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion
+                                where report.Date == _reportNotices[0].Date
+                                orderby report.Confirmed descending
+                                select report).Take(4);
+
+            var cols = from report in sortedPlaces
+                       select new ColumnItem(report.Confirmed);
+
+            ComparisonModel = new PlotModel
+            {
+                TitleColor = OxyColors.GhostWhite,
+                PlotAreaBorderColor = OxyColors.GhostWhite,
+                TextColor = OxyColors.GhostWhite,
+                //DefaultColors = OxyPalettes.Cool(8).Colors,
+                Title = "Total Confirmed Comparison",
+                Axes = {
+                    new LinearAxis {
+                        IsPanEnabled = false,
+                        Position = AxisPosition.Left,
+                        MinimumPadding = 0,
+                        TicklineColor = OxyColors.GhostWhite
+                    },
+                    new CategoryAxis {
+                        IsPanEnabled = false,
+                        Position = AxisPosition.Bottom,
+                        MinimumPadding = 0,
+                        TicklineColor = OxyColors.GhostWhite,
+                        ItemsSource = from report in sortedPlaces
+                                      let locationString = report.ProvinceState != "" ?
+                                          report.ProvinceState + ", " + report.CountryRegion : report.CountryRegion
+                                      select locationString
+                    }
+                },
+                Series = {
+                    new ColumnSeries
+                    {
+                        LabelPlacement = LabelPlacement.Middle,
+                        FillColor = OxyColor.FromArgb(170, 128, 176, 128),
+                        ItemsSource = cols
+                    }
+                }
+            };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -220,9 +368,9 @@ namespace Pathogen.ViewModels
         public ICommand PerformLocationSearch => new Command<string>((string query) =>
         {
             List<string> results = new List<string>();
-            if (_locations.IsSuccessfullyCompleted)
+            if (InitializeNotifier.IsSuccessfullyCompleted)
             {
-                foreach(var location in _locations.Result)
+                foreach (var location in _locations)
                 {
                     if (location.ToLower().Contains(query.Trim().ToLower()))
                         results.Add(location);

@@ -2,17 +2,27 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:Pathogen.Controls"
+             xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
              x:Class="Pathogen.Views.ChartsView">
     <ScrollView VerticalScrollBarVisibility="Never" Padding="0,0,0,20">
         <StackLayout>
             <Frame CornerRadius="15"
-                   IsClippedToBounds="true"
+                   IsClippedToBounds="True"
                    Padding="0"
-                   VerticalOptions="FillAndExpand"
-                   HasShadow="False">
+                   HasShadow="False"
+                   HeightRequest="400">
                 <controls:BindableMap MapType="Street"
                                       MapPosition="{Binding LocalPosition}"
                                       MapPins="{Binding Pins}" />
+            </Frame>
+            <Frame CornerRadius="15"
+                   Padding="10"
+                   HasShadow="False"
+                   BackgroundColor="{DynamicResource SecondaryColor}"
+                   HeightRequest="300">
+                <oxy:PlotView Model="{Binding ComparisonModel}"
+                              VerticalOptions="Fill"
+                              HorizontalOptions="Fill" />
             </Frame>
         </StackLayout>
     </ScrollView>

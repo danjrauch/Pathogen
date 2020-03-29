@@ -27,6 +27,7 @@ namespace Pathogen.iOS
             FormsMaps.Init();
             CarouselView.FormsPlugin.iOS.CarouselViewRenderer.Init();
             AiForms.Renderers.iOS.SettingsViewInit.Init();
+            OxyPlot.Xamarin.Forms.Platform.iOS.PlotViewRenderer.Init();
 
             LoadApplication(new App());
 

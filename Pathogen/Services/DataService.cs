@@ -47,7 +47,6 @@ namespace Pathogen.Services
                 Language = Languages.EN,
                 From = DateTime.Now
             });
-
             if (articlesResponse.Status == Statuses.Ok)
             {
                 return (from ar in articlesResponse.Articles

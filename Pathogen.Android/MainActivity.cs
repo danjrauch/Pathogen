@@ -25,6 +25,7 @@ namespace Pathogen.Droid
             FormsMaps.Init(this, savedInstanceState);
             CarouselView.FormsPlugin.Android.CarouselViewRenderer.Init();
             AiForms.Renderers.Droid.SettingsViewInit.Init();
+            OxyPlot.Xamarin.Forms.Platform.Android.PlotViewRenderer.Init();
 
             LoadApplication(new App());
         }
