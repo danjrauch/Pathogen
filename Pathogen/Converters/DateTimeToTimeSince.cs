@@ -10,7 +10,19 @@ namespace Pathogen.Converters
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
             string outputDateTime = string.Empty;
-            var inputDateTime = ((DateTime)value).ToLocalTime();
+            var inputDateTime = DateTime.Now.ToLocalTime();
+
+            switch(value)
+            {
+                case DateTime d:
+                    inputDateTime = d;
+                    break;
+                case object s:
+                    inputDateTime = ((DateTime)s).ToLocalTime();
+                    break;
+                default:
+                    break;
+            };
 
 			if (inputDateTime != null)
 			{

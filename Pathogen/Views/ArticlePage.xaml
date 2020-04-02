@@ -4,9 +4,6 @@
              xmlns:converters="clr-namespace:Pathogen.Converters"
              BackgroundColor="{DynamicResource PageBackgroundColor}"
              x:Class="Pathogen.Views.ArticlePage">
-    <NavigationPage.TitleView>
-    </NavigationPage.TitleView>
-
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:DateTimeToTimeSince x:Key="datetimeToTimeSpan" />

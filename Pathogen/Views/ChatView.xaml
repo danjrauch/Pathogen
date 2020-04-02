@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ChatUIXForms.Utilities" xmlns:partials="clr-namespace:Pathogen.Views.Partials"
+             x:Class="Pathogen.Views.ChatView">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <local:ChatTemplateSelector x:Key="ChatTemplateSelector"/>
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <StackLayout>
+        <ActivityIndicator IsRunning="{Binding InitializeNotifier.IsNotCompleted}"
+                           Color="{Binding SecondaryTextColor}"
+                           IsVisible="{Binding InitializeNotifier.IsNotCompleted}" />
+        <Grid RowSpacing="0"
+              ColumnSpacing="0"
+              IsVisible="{Binding InitializeNotifier.IsCompleted}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <!--<RowDefinition Height="1" />-->
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ListView Grid.Row="0" 
+                      ItemTemplate="{StaticResource ChatTemplateSelector}" 
+                      ItemsSource="{Binding Messages}" 
+                      Margin="0" 
+                      HasUnevenRows="True"
+                      SelectionMode="None"
+                      VerticalOptions="FillAndExpand" 
+                      SeparatorColor="Transparent" >
+            </ListView>
+
+            <!--<SearchBar x:Name="messageBar"
+                       Grid.Row="1"
+                       Margin="0,0,0,25"
+                       Placeholder="Type message here"
+                       BackgroundColor="Transparent"
+                       CancelButtonColor="{DynamicResource PrimaryTextColor}"
+                       SearchCommand="{Binding OnSendCommand}"
+                       SearchCommandParameter="{Binding Text, Source={x:Reference messageBar}}" />-->
+
+            <partials:ChatInputBarView Grid.Row="1"
+                                       Margin="0,0,10,35"/>
+        </Grid>
+    </StackLayout>
+</ContentView>

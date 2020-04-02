@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ViewCell xmlns="http://xamarin.com/schemas/2014/forms" 
+          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+          xmlns:converters="clr-namespace:Pathogen.Converters"
+          x:Class="Pathogen.Views.Cells.OutboundViewCell">
+    <Frame BackgroundColor="Gray"
+           CornerRadius="10"
+           Padding="10"
+           HasShadow="false"
+           Margin="90,10,10,10">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid.Resources>
+                <ResourceDictionary>
+                    <converters:DateTimeToTimeSince x:Key="datetimeToTimeSpan" />
+                </ResourceDictionary>
+            </Grid.Resources>
+
+            <Label Grid.Row="0" Grid.Column="0"
+                   Text="{Binding Text}"
+                   TextColor="{DynamicResource TertiaryTextColor}">
+            </Label>
+
+            <Label Grid.Row="0" Grid.Column="1"
+                   HorizontalOptions="EndAndExpand"
+                   VerticalOptions="Center"
+                   FontSize="Micro"
+                   TextColor="{DynamicResource TertiaryTextColor}"
+                   Text="{Binding TimeSent,
+                          Converter={StaticResource datetimeToTimeSpan}}">
+            </Label>
+        </Grid>
+    </Frame>
+</ViewCell>

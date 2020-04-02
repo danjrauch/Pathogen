@@ -36,6 +36,7 @@ namespace Pathogen.ViewModels
         private List<NewsItem> _globalNews;
         private PlotModel _comparisonModel;
         private PlotModel _localTimeSeriesModel;
+        private ObservableCollection<Message> _messages = new ObservableCollection<Message>();
 
         public int CarouselPosition
         {
@@ -279,6 +280,16 @@ namespace Pathogen.ViewModels
             }
         }
 
+        public ObservableCollection<Message> Messages
+        {
+            get => _messages;
+            set
+            {
+                _messages = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainPageViewModel()
         {
             InitializeNotifier = NotifyTask.Create(InitializeData());
@@ -351,6 +362,12 @@ namespace Pathogen.ViewModels
                     }
                 }
             };
+
+            // TODO Connect to API to retrieve these (mongodb realm)
+            Messages.Add(new Message() { Text = "Hi", User = App.User });
+            Messages.Add(new Message() { Text = "How are you?", User = "OtherUser" });
+
+            Console.WriteLine("Messages Count: " + Messages.Count);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -401,6 +418,15 @@ namespace Pathogen.ViewModels
                     BindingContext = article
                 };
                 await Application.Current.MainPage.Navigation.PushAsync(articlePage);
+            }
+        });
+
+        public ICommand OnSendCommand => new Command<string>((string textToSend) =>
+        {
+            if (!string.IsNullOrEmpty(textToSend))
+            {
+                Messages.Add(new Message() { Text = textToSend, User = App.User });
+                //textToSend = string.Empty;
             }
         });
     }

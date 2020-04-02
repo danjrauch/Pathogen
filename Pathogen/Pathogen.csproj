@@ -35,5 +35,11 @@
     <Folder Include="Behaviors\" />
     <Folder Include="Controls\" />
     <Folder Include="Services\" />
+    <Folder Include="Views\Cells\" />
+    <Folder Include="Utilities\" />
+    <Folder Include="Views\Partials\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\InboundViewCell.xaml" />
   </ItemGroup>
 </Project>

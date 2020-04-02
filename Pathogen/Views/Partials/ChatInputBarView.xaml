@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             x:Class="Pathogen.Views.Partials.ChatInputBarView">
+    <Grid RowSpacing="0" 
+          ColumnSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Entry x:Name="chatTextInput"
+               Grid.Row="0" 
+               Grid.Column="0"
+               Margin="1"
+               TextColor="{DynamicResource PrimaryTextColor}" 
+               Keyboard="Chat"
+               HorizontalOptions="FillAndExpand"
+               BackgroundColor="Transparent"
+               PlaceholderColor="{DynamicResource PrimaryTextColor}"
+               Placeholder="Type your message here" />
+        <Label Grid.Row="0"
+               Grid.Column="1"
+               Text="Send"
+               TextColor="{DynamicResource PrimaryTextColor}"
+               Margin="10"
+               VerticalTextAlignment="Center">
+            <Label.GestureRecognizers> 
+                <TapGestureRecognizer
+                        Command="{Binding OnSendCommand}"
+                        CommandParameter="{Binding Text, Source={x:Reference chatTextInput}}" />
+            </Label.GestureRecognizers>
+        </Label>
+    </Grid>
+</ContentView>

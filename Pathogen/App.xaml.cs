@@ -17,6 +17,9 @@ namespace Pathogen
 
     public partial class App : Xamarin.Forms.Application
     {
+        // TODO Connect to API or authenticate users
+        public static string User = "DanRauch";
+
         public App()
         {
             InitializeComponent();
