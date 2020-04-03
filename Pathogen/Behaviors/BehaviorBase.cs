@@ -1,7 +1,7 @@
 ﻿using System;
 using Xamarin.Forms;
 
-namespace EventToCommandBehavior
+namespace Pathogen.Behaviors
 {
 	public class BehaviorBase<T> : Behavior<T> where T : BindableObject
 	{

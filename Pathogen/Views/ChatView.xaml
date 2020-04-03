@@ -1,11 +1,15 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:ChatUIXForms.Utilities" xmlns:partials="clr-namespace:Pathogen.Views.Partials"
+             xmlns:local="clr-namespace:ChatUIXForms.Utilities"
+             xmlns:partials="clr-namespace:Pathogen.Views.Partials"
+             xmlns:behaviors="clr-namespace:Pathogen.Behaviors"
+             xmlns:converters="clr-namespace:Pathogen.Converters"
              x:Class="Pathogen.Views.ChatView">
     <ContentView.Resources>
         <ResourceDictionary>
             <local:ChatTemplateSelector x:Key="ChatTemplateSelector"/>
+            <converters:ItemVisibilityEventArgsToItemConverter x:Key="ItemConverter" />
         </ResourceDictionary>
     </ContentView.Resources>
 
@@ -31,18 +35,46 @@
                       Margin="0" 
                       HasUnevenRows="True"
                       SelectionMode="None"
-                      VerticalOptions="FillAndExpand" 
-                      SeparatorColor="Transparent" >
+                      SelectedItem="{Binding FocusedMessage, Mode=TwoWay}"
+                      Rotation = "180"
+                      FlowDirection = "LeftToRight"
+                      VerticalScrollBarVisibility="Never"
+                      VerticalOptions="FillAndExpand"
+                      SeparatorColor="Transparent">
+                <ListView.Behaviors>
+                    <behaviors:ScrollOnChangeBehavior />
+                    <behaviors:EventToCommandBehavior EventName="ItemAppearing" Command="{Binding OnMessageAppearingCommand}" Converter="{StaticResource ItemConverter}" />
+                    <behaviors:EventToCommandBehavior EventName="ItemDisappearing" Command="{Binding OnMessageDisappearingCommand}" Converter="{StaticResource ItemConverter}" />
+                </ListView.Behaviors>
             </ListView>
 
-            <!--<SearchBar x:Name="messageBar"
-                       Grid.Row="1"
-                       Margin="0,0,0,25"
-                       Placeholder="Type message here"
-                       BackgroundColor="Transparent"
-                       CancelButtonColor="{DynamicResource PrimaryTextColor}"
-                       SearchCommand="{Binding OnSendCommand}"
-                       SearchCommandParameter="{Binding Text, Source={x:Reference messageBar}}" />-->
+            <Frame HorizontalOptions="EndAndExpand" 
+                   Margin="0,0,2,15"
+                   VerticalOptions="End"
+                   HasShadow="false" 
+                   Grid.Row="0"  
+                   HeightRequest="50" WidthRequest="50"
+                   CornerRadius="25"
+                   Padding="1"
+                   BackgroundColor="{DynamicResource TertiaryColor}"
+                   IsVisible="{Binding ShowPendingMessageNotifier, Mode=TwoWay}">
+                <StackLayout Spacing="1">
+                    <Label Text="{Binding PendingMessageCount}"
+                           HorizontalOptions="CenterAndExpand"
+                           IsVisible="{Binding PendingMessageCountVisible}"
+                           VerticalTextAlignment="Center"
+                           TextColor="{DynamicResource SecondaryTextColor}"/>
+                    <Image Source="ic_scrolldown"
+                           Margin="0,0,0,5"
+                           WidthRequest="30"
+                           HeightRequest="30"
+                           VerticalOptions="CenterAndExpand"/>
+                </StackLayout>
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding OnScrollCommand}"/>
+                </Frame.GestureRecognizers>
+            </Frame>
 
             <partials:ChatInputBarView Grid.Row="1"
                                        Margin="0,0,10,35"/>

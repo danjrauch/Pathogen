@@ -6,11 +6,15 @@
              x:Class="Pathogen.Views.ChartsView">
     <ScrollView VerticalScrollBarVisibility="Never" Padding="0,0,0,20">
         <StackLayout>
+            <ActivityIndicator IsRunning="{Binding InitializeNotifier.IsNotCompleted}"
+                               Color="{Binding SecondaryTextColor}"
+                               IsVisible="{Binding InitializeNotifier.IsNotCompleted}" />
             <Frame CornerRadius="15"
                    IsClippedToBounds="True"
                    Padding="0"
                    HasShadow="False"
-                   HeightRequest="400">
+                   HeightRequest="400"
+                   IsVisible="{Binding InitializeNotifier.IsCompleted}">
                 <controls:BindableMap MapType="Street"
                                       MapPosition="{Binding LocalPosition}"
                                       MapPins="{Binding Pins}" />

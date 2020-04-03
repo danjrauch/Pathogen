@@ -2,7 +2,7 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:Pathogen.Converters"
-             xmlns:local="clr-namespace:EventToCommandBehavior"
+             xmlns:behaviors="clr-namespace:Pathogen.Behaviors"
              x:Class="Pathogen.Views.NewsView">
     <ContentView.Resources>
 		<ResourceDictionary>
@@ -11,9 +11,13 @@
 	</ContentView.Resources>
     <ScrollView VerticalScrollBarVisibility="Never" Padding="0,0,0,20">
         <StackLayout>
+            <ActivityIndicator IsRunning="{Binding InitializeNotifier.IsNotCompleted}"
+                               Color="{Binding SecondaryTextColor}"
+                               IsVisible="{Binding InitializeNotifier.IsNotCompleted}" />
             <Frame CornerRadius="15"
                    BackgroundColor="{DynamicResource SecondaryColor}"
-                   HasShadow="False">
+                   HasShadow="False"
+                   IsVisible="{Binding InitializeNotifier.IsCompleted}">
                 <StackLayout>
                     <Label Text="Global News"
                            FontAttributes="Bold"
@@ -26,7 +30,7 @@
                               SelectionMode="None"
                               BackgroundColor="Transparent">
                         <ListView.Behaviors>
-                            <local:EventToCommandBehavior EventName="ItemTapped" Command="{Binding NavigateToNews}" Converter="{StaticResource SelectedItemConverter}" />
+                            <behaviors:EventToCommandBehavior EventName="ItemTapped" Command="{Binding NavigateToNews}" Converter="{StaticResource SelectedItemConverter}" />
                         </ListView.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>

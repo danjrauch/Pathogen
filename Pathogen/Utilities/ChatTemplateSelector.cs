@@ -22,10 +22,7 @@ namespace ChatUIXForms.Utilities
             if (messageVm == null)
                 return null;
 
-            System.Console.WriteLine(messageVm.Text);
-
             return (messageVm.User == App.User) ? outboundDataTemplate : inboundDataTemplate;
         }
-
     }
 }

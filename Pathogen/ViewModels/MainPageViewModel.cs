@@ -37,6 +37,10 @@ namespace Pathogen.ViewModels
         private PlotModel _comparisonModel;
         private PlotModel _localTimeSeriesModel;
         private ObservableCollection<Message> _messages = new ObservableCollection<Message>();
+        private Message _focusedMessage;
+        private bool _showPendingMessageNotifier;
+        private int _pendingMessageCount;
+        private string _messageInput;
 
         public int CarouselPosition
         {
@@ -290,6 +294,48 @@ namespace Pathogen.ViewModels
             }
         }
 
+        public bool ShowPendingMessageNotifier
+        {
+            get => _showPendingMessageNotifier;
+            set
+            {
+                _showPendingMessageNotifier = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Message FocusedMessage
+        {
+            get => _focusedMessage;
+            set
+            {
+                _focusedMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Queue<Message> DelayedMessages { get; set; } = new Queue<Message>();
+
+        public int PendingMessageCount
+        {
+            get => _pendingMessageCount;
+            set
+            {
+                _pendingMessageCount = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string MessageInput
+        {
+            get => _messageInput;
+            set
+            {
+                _messageInput = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainPageViewModel()
         {
             InitializeNotifier = NotifyTask.Create(InitializeData());
@@ -297,7 +343,7 @@ namespace Pathogen.ViewModels
 
         public async Task InitializeData()
         {
-            string storedLocation = Preferences.Get("Location", "Afghanistan");
+            string storedLocation = Preferences.Get("Location", "US");
 
             var GetGlobalNews = DataService.RetrieveGlobalNews();
             var GetLocations = DataService.RetrieveLocations();
@@ -364,10 +410,52 @@ namespace Pathogen.ViewModels
             };
 
             // TODO Connect to API to retrieve these (mongodb realm)
-            Messages.Add(new Message() { Text = "Hi", User = App.User });
-            Messages.Add(new Message() { Text = "How are you?", User = "OtherUser" });
 
-            Console.WriteLine("Messages Count: " + Messages.Count);
+            ObservableCollection<Message> queuedMessages = new ObservableCollection<Message>();
+
+            queuedMessages.Add(new Message() { Text = "Hey how are you guys?", User = App.User });
+            queuedMessages.Add(new Message() { Text = "It's getting really bad here.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Yeah I feel sick today.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "What are your symptoms?", User = App.User });
+            queuedMessages.Add(new Message() { Text = "Cough and fever.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "I just saw a firetruck go by my house.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "The governor said we're doing stay in place.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "GUYS! My mom just passed out.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Omg really??", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Yeah what should I do?", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Call 911?", User = App.User });
+            queuedMessages.Add(new Message() { Text = "I hope she feels better soon.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Wow this is getting serious.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Yeah what will come next?", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Maybe Trump will say something good during the press conference.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "Hopefully.", User = App.User });
+            queuedMessages.Add(new Message() { Text = "There are police everywhere outside my apartment.", User = "Other" });
+            queuedMessages.Add(new Message() { Text = "What's happening?", User = App.User });
+            queuedMessages.Add(new Message() { Text = "I can't tell yet, somebody fell in the street again.", User = "Other" });
+
+            int messageCounter = 0;
+
+            Device.StartTimer(TimeSpan.FromSeconds(5), () =>
+            {
+                if(messageCounter >= queuedMessages.Count)
+                {
+                    messageCounter = 0;
+                }
+
+                Message input = new Message() { Text = queuedMessages[messageCounter].Text, User = queuedMessages[messageCounter].User };
+                messageCounter++;
+
+                if (ShowPendingMessageNotifier)
+                {
+                    DelayedMessages.Enqueue(input);
+                    PendingMessageCount++;
+                }
+                else
+                {
+                    Messages.Insert(0, input);
+                }
+                return true;
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -425,9 +513,46 @@ namespace Pathogen.ViewModels
         {
             if (!string.IsNullOrEmpty(textToSend))
             {
-                Messages.Add(new Message() { Text = textToSend, User = App.User });
-                //textToSend = string.Empty;
+                Messages.Insert(0, new Message() { Text = textToSend, User = App.User });
+                MessageInput = "";
             }
+        });
+
+        public ICommand OnMessageAppearingCommand => new Command<Message>((Message message) =>
+        {
+            var idx = Messages.IndexOf(message);
+            if (idx == 0)
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    lock (Messages)
+                    {
+                        ShowPendingMessageNotifier = false;
+                        while (DelayedMessages.Count > 0)
+                        {
+                            Messages.Insert(0, DelayedMessages.Dequeue());
+                        }
+                        PendingMessageCount = 0;
+                    }
+                });
+            }
+        });
+
+        public ICommand OnMessageDisappearingCommand => new Command<Message>((Message message) =>
+        {
+            var idx = Messages.IndexOf(message);
+            if (idx >= 0 && idx <= 1)
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    ShowPendingMessageNotifier = true;
+                });
+            }
+        });
+
+        public ICommand OnScrollCommand => new Command(() =>
+        {
+            FocusedMessage = Messages.First();
         });
     }
 }

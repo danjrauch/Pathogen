@@ -2,9 +2,9 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:Pathogen.Converters"
-             xmlns:local="clr-namespace:EventToCommandBehavior"
              xmlns:controls="clr-namespace:Pathogen.Controls"
              xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
+             xmlns:behaviors="clr-namespace:Pathogen.Behaviors"
              x:Class="Pathogen.Views.HomeView">
     <ContentView.Resources>
 		<ResourceDictionary>
@@ -54,7 +54,7 @@
                               SelectionMode="None"
                               BackgroundColor="Transparent">
                         <ListView.Behaviors>
-                            <local:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ChangeLocation}" Converter="{StaticResource SelectedItemConverter}" />
+                            <behaviors:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ChangeLocation}" Converter="{StaticResource SelectedItemConverter}" />
                         </ListView.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -117,7 +117,7 @@
                               SelectionMode="None"
                               BackgroundColor="Transparent">
                         <ListView.Behaviors>
-                            <local:EventToCommandBehavior EventName="ItemTapped" Command="{Binding NavigateToNews}" Converter="{StaticResource SelectedItemConverter}" />
+                            <behaviors:EventToCommandBehavior EventName="ItemTapped" Command="{Binding NavigateToNews}" Converter="{StaticResource SelectedItemConverter}" />
                         </ListView.Behaviors>
                         <ListView.ItemTemplate>
                             <DataTemplate>
